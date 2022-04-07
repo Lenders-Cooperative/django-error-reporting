@@ -118,3 +118,48 @@ USE_TZ = True
 
 STATIC_URL = "/static/"
 
+
+# Sentry
+
+import logging
+from urllib.parse import urlparse
+import sentry_sdk
+from sentry_sdk.integrations.django.transactions import LEGACY_RESOLVER
+from sentry_sdk.integrations.django import DjangoIntegration
+from sentry_sdk.integrations.logging import LoggingIntegration
+
+def urlconf_callback():
+    return "config.urls"
+
+def print_to_stdout(event, _hint):
+    print(f"{event}")
+
+def before_send(event, _hint):
+    print_to_stdout(event, _hint)
+    if "request" in event and "url" in event["request"]:
+        url = event["request"]["url"]
+        path = urlparse(url).path
+        urlconf = urlconf_callback()
+        event["transaction"] = LEGACY_RESOLVER.resolve(path, urlconf=urlconf)
+    return event
+
+sentry_logging = LoggingIntegration(
+    level=logging.ERROR,  # Capture info and above as breadcrumbs
+    event_level=logging.ERROR,  # Send errors as events
+)
+integrations = [
+    sentry_logging,
+    DjangoIntegration(),
+]
+
+sentry_sdk.init(
+    dsn="https://absolutely-cannot-be-valid@o99999.ingest.sentry.io/9999999",
+    debug=DEBUG,
+    traces_sample_rate=0.0,
+    integrations=integrations,
+    environment="localhost",
+    release="0.0",
+    send_default_pii=True,
+    before_send=before_send,
+    request_bodies="always"
+)
