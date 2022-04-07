@@ -47,6 +47,8 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    #
+    "django_error_reporting.middleware.ErrorReportingMiddleware",
 ]
 
 ROOT_URLCONF = "test_app.urls"
@@ -143,6 +145,8 @@ def before_send(event, _hint):
         event["transaction"] = LEGACY_RESOLVER.resolve(path, urlconf=urlconf)
     return event
 
+SENTRY_DSN = "https://absolutely-cannot-be-valid@o99999.ingest.sentry.io/9999999"
+
 sentry_logging = LoggingIntegration(
     level=logging.ERROR,  # Capture info and above as breadcrumbs
     event_level=logging.ERROR,  # Send errors as events
@@ -153,7 +157,7 @@ integrations = [
 ]
 
 sentry_sdk.init(
-    dsn="https://absolutely-cannot-be-valid@o99999.ingest.sentry.io/9999999",
+    dsn=SENTRY_DSN,
     debug=DEBUG,
     traces_sample_rate=0.0,
     integrations=integrations,
@@ -163,3 +167,20 @@ sentry_sdk.init(
     before_send=before_send,
     request_bodies="always"
 )
+
+
+# Error Reporting
+
+def error_reporting_cb(request, add_event_tag):
+    add_event_tag(
+        "test1",
+        "hi, i'm a test tag"
+    )
+
+    add_event_tag(
+        "test2",
+        request.META.get("HTTP_USER_AGENT")
+    )
+
+
+ERROR_REPORTING_TAGGING_CALLBACK = error_reporting_cb
