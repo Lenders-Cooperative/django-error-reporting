@@ -36,7 +36,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     #
-    "django_error_reporting",
+    "django_error_reporting.apps.DjangoErrorReportingConfig",
 ]
 
 MIDDLEWARE = [
