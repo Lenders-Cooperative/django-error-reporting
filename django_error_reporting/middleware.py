@@ -12,7 +12,18 @@ __all__ = [
 class ErrorReportingMiddleware(object):
     def __init__(self, get_response):
         self.get_response = get_response
-
+        try:
+            from ddtrace import tracer
+            self.dd_scope = tracer.current_span()
+        except:
+            self.dd_scope = None
+        try:
+            import sentry_sdk
+            self.sentry_sdk = sentry_sdk
+            self.sentry_enabled = True if hasattr(settings, 'SENTRY_DSN') and settings.SENTRY_DSN else False
+        except:
+            self.sentry_sdk = None
+            
     def __call__(self, request):
         # Generate request_id from AWS load balancer trace ID or a UUID
         request_id = request.META.get(
