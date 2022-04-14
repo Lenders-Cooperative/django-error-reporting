@@ -14,8 +14,7 @@ class ErrorReportingMiddleware(object):
     def __init__(self, get_response):
         self.get_response = get_response
         try:
-            from ddtrace import tracer
-            self.dd_scope = tracer.current_span()
+            self.dd_scope = ddtrace.tracer.get_root_span()
         except:
             self.dd_scope = None
 
