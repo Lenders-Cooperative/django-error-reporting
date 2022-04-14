@@ -6,6 +6,9 @@ import logging
 ENABLE_DATADOG_INTEGRATION = True
 ENABLE_SENTRY_INTEGRATION = True
 
+# Include end user information as span tags
+DER_INCLUDE_REQUEST_TAGS = True
+
 SENTRY_TRACES_SAMPLE_RATE = 0.0
 BASE_URL = "localhost"
 CODEBUILD_BUILD_NUMBER = "0.0"
