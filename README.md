@@ -75,6 +75,6 @@ This middleware should be added as late as possible.
 
 ## Utilities
 
-### `add_event_tag(name, value)`
+### `add_event_tag(name, value, dd_scope=None)`
 
-To add an event tag to the data sent to Sentry or DataDog, you need to this function. 
+Adds an event tag to the data sent to Sentry and/or DataDog. 
