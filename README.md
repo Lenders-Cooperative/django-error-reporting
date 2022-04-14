@@ -40,6 +40,14 @@ Indicates whether Sentry integrations should be processed.
 
 Default: `True`
 
+### `DER_INCLUDE_REQUEST_TAGS`
+
+Indicates whether event tags related to the request should be added.
+
+These will include:
+ * `http.client.ip_address` - remote client's IP address
+ * `http.client.user_agent` - browner's user agent
+
 ## On Ready
 
 When the app is loaded (i.e., `ready()` is called), it will do the following:
