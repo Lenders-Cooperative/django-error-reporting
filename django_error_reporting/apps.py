@@ -13,3 +13,13 @@ class DjangoErrorReportingConfig(AppConfig):
             if hasattr(DjSettings, key) or key.startswith("_") or key in ["logging"]:
                 continue
             setattr(DjSettings, key, getattr(DERSettings, key))
+
+        #
+        # DataDog
+
+        if DjSettings.ENABLE_DATADOG_INTEGRATION:
+            # Add DataDog middleware
+            middleware_name = "django_error_reporting.middleware.DataDogExceptionMiddleware"
+
+            if middleware_name not in DjSettings.MIDDLEWARE:
+                DjSettings.MIDDLEWARE.append(middleware_name)

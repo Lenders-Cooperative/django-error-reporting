@@ -1,6 +1,7 @@
 from uuid import uuid4
 from django.conf import settings
 from django.db import connection
+import ddtrace
 from .utils import *
 
 
@@ -83,7 +84,7 @@ class ErrorReportingMiddleware(object):
                 self.dd_scope
             )
 
-        if hasattr(settings, "ERROR_REPORTING_TAGGING_CALLBACK"):
+        if hasattr(settings, "ERROR_REPORTING_TAGGING_CALLBACK") and settings.ERROR_REPORTING_TAGGING_CALLBACK:
             settings.ERROR_REPORTING_TAGGING_CALLBACK(
                 request,
                 add_event_tag,
@@ -91,3 +92,28 @@ class ErrorReportingMiddleware(object):
             )
 
         return self.get_response(request)
+
+
+class DataDogExceptionMiddleware(object):
+    """
+    When an exception is captured, this middleware will set the appropriate span tags on the root span of the trace.
+
+    This middleware should be added as late as possible.
+    """
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        response = self.get_response(request)
+        return response
+
+    def process_exception(self, request, exception):
+        if exception:
+            ddtrace.tracer.current_root_span().set_exc_info(
+                type(exception),
+                exception,
+                exception.__traceback__
+            )
+
+        # [!!] Return nothing so other middleware will process
+

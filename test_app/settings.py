@@ -171,15 +171,17 @@ sentry_sdk.init(
 
 # Error Reporting
 
-def error_reporting_cb(request, add_event_tag):
+def error_reporting_cb(request, add_event_tag, dd_scope=None):
     add_event_tag(
         "test1",
-        "hi, i'm a test tag"
+        "hi, i'm a test tag",
+        dd_scope
     )
 
     add_event_tag(
         "test2",
-        request.META.get("HTTP_USER_AGENT")
+        request.META.get("HTTP_USER_AGENT"),
+        dd_scope
     )
 
 
