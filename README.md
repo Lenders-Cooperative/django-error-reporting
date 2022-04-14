@@ -24,16 +24,6 @@ INSTALLED_APPS = (
 )
 ```
 
-Add the middleware:
-```python
-MIDDLEWARE = [
-    ...
-    "django_error_reporting.middleware.ErrorReportingMiddleware",
-    ...
-]
-```
-_Note: to capture user data, middleware needs to be after `django.contrib.auth.middleware.AuthenticationMiddleware`._
-
 ## Settings
 
 The following are settings available and their defaults:
@@ -54,7 +44,8 @@ Default: `True`
 
 When the app is loaded (i.e., `ready()` is called), it will do the following:
  * Load default settings into the project settings
- * If DataDog integration is enabled, add `DataDogExceptionMiddleware` to the end of `settings.MIDDLEWARE`. 
+ * Add `ErrorReportingMiddleware` to `settings.MIDDLEWARE`.
+ * If DataDog integration is enabled, add `DataDogExceptionMiddleware` to `settings.MIDDLEWARE`. 
 
 
 ## Middleware
