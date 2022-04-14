@@ -96,8 +96,8 @@ class ErrorReportingMiddleware(object):
                 self.dd_scope
             )
 
-        if hasattr(settings, "ERROR_REPORTING_TAGGING_CALLBACK") and settings.ERROR_REPORTING_TAGGING_CALLBACK:
-            settings.ERROR_REPORTING_TAGGING_CALLBACK(
+        if hasattr(settings, "DER_REQUEST_TAGGING_CB") and settings.DER_REQUEST_TAGGING_CB:
+            settings.DER_REQUEST_TAGGING_CB(
                 request,
                 add_event_tag,
                 self.dd_scope

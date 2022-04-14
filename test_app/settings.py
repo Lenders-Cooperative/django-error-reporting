@@ -185,4 +185,4 @@ def error_reporting_cb(request, add_event_tag, dd_scope=None):
     )
 
 
-ERROR_REPORTING_TAGGING_CALLBACK = error_reporting_cb
+DER_REQUEST_TAGGING_CB = error_reporting_cb
