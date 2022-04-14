@@ -5,7 +5,7 @@ import ddtrace
 
 
 __all__ = [
-    "add_event_tag", "capture_exception", "capture_message",
+    "add_event_tag", "capture_exception", "capture_message", "add_middleware",
 ]
 
 
@@ -81,3 +81,11 @@ def capture_message(e):
     """
     logger.info("Received message: [%s]", e)
     sentry_sdk.capture_message(e)
+
+
+def add_middleware(middleware, add_early=False):
+    if middleware not in settings.MIDDLEWARE:
+        if add_early:
+            settings.MIDDLEWARE = [middleware] + settings.MIDDLEWARE
+        else:
+            settings.MIDDLEWARE.append(middleware)

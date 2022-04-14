@@ -77,3 +77,9 @@ This middleware should be added as late as possible.
 ### `add_event_tag(name, value, dd_scope=None)`
 
 Adds an event tag to the data sent to Sentry and/or DataDog. 
+
+### `add_middleware(middleware, add_early=False)`
+
+Add a middleware to `settings.MIDDLEWARE` after checking for its existence.
+
+If `add_early`, middleware is prepended to the list. Otherwise, it is appended. 
