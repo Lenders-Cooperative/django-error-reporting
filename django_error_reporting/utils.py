@@ -5,7 +5,7 @@ import ddtrace
 
 
 __all__ = [
-    "add_event_tag", "capture_exception", "capture_message", "add_middleware",
+    "add_event_tag", "capture_exception", "capture_message", "add_middleware", "add_installed_app", "print_debug",
 ]
 
 
@@ -89,3 +89,13 @@ def add_middleware(middleware, add_early=False):
             settings.MIDDLEWARE = [middleware] + settings.MIDDLEWARE
         else:
             settings.MIDDLEWARE.append(middleware)
+
+
+def add_installed_app(app):
+    if app not in settings.INSTALLED_APPS:
+        settings.INSTALLED_APPS.append(app)
+
+
+def print_debug(msg):
+    if settings.DEBUG:
+        print(f"[DER] {msg}")

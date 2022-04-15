@@ -1,13 +1,28 @@
 import logging
 
 #
-# Default settings
+# General
 
-ENABLE_DATADOG_INTEGRATION = True
-ENABLE_SENTRY_INTEGRATION = True
+DER_ENABLED_INTEGRATIONS = (
+    "datadog",
+    "sentry"
+)
 
-# Include end user information as span tags
-DER_INCLUDE_REQUEST_TAGS = True
+DER_INCLUDE_REQUEST_TAGS = True  # Include end user information as span tags
+
+#
+# Logging
+DER_LOGGING_LEVEL = logging.ERROR
+
+# DataDog Logging
+DER_SETUP_DATADOG_LOGGING = True
+DER_DATADOG_LOGGING_LEVEL = None
+DER_DATADOG_LOGGING_FILE = None
+DER_DATADOG_LOGGING_TO_CONSOLE = False
+
+# Sentry Logging
+DER_SENTRY_LOGGING_LEVEL = None
+
 
 SENTRY_TRACES_SAMPLE_RATE = 0.0
 BASE_URL = "localhost"

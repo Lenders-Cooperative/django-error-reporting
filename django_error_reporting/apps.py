@@ -1,6 +1,9 @@
 from django.apps import AppConfig
 from django.conf import settings as DjSettings
 import django_error_reporting.settings as DERSettings
+import sentry_sdk
+import django_error_reporting.contrib
+from .utils import *
 
 
 class DjangoErrorReportingConfig(AppConfig):
@@ -8,6 +11,8 @@ class DjangoErrorReportingConfig(AppConfig):
     verbose_name = "Django Error Reporting"
 
     def ready(self):
+        print_debug("Loading...")
+
         #
         # Load our settings into Django
 
@@ -19,17 +24,30 @@ class DjangoErrorReportingConfig(AppConfig):
         #
         # Generic middleware
 
-        middleware_name = "django_error_reporting.middleware.ErrorReportingMiddleware"
-
-        if middleware_name not in DjSettings.MIDDLEWARE:
-            DjSettings.MIDDLEWARE.append(middleware_name)
+        add_middleware("django_error_reporting.middleware.ErrorReportingMiddleware")
 
         #
-        # DataDog
+        # Logger settings
 
-        if DjSettings.ENABLE_DATADOG_INTEGRATION:
-            # Add DataDog middleware
-            middleware_name = "django_error_reporting.middleware.DataDogExceptionMiddleware"
+        for key in ["formatters", "handlers", "loggers"]:
+            if key not in DjSettings.LOGGING:
+                DjSettings.LOGGING[key] = {}
 
-            if middleware_name not in DjSettings.MIDDLEWARE:
-                DjSettings.MIDDLEWARE.append(middleware_name)
+        if "version" not in DjSettings.LOGGING:
+            DjSettings.LOGGING["version"] = 1
+
+        #
+        # Run integration setups
+
+        for integration in DjSettings.DER_ENABLED_INTEGRATIONS:
+            if not hasattr(django_error_reporting.contrib, integration):
+                raise NotImplementedError(f"Integration {integration} is not available")
+
+            module = getattr(django_error_reporting.contrib, integration)
+
+            if not hasattr(module, "setup"):
+                raise NotImplementedError(f"Integration {integration} is missing the setup function")
+
+            getattr(module, "setup")()
+
+        print_debug("Finished loading...")
