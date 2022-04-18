@@ -2,7 +2,7 @@ from django.apps import AppConfig
 from django.conf import settings as DjSettings
 import django_error_reporting.settings as DERSettings
 import sentry_sdk
-import contrib
+import django_error_reporting.contrib
 from .utils import *
 
 
