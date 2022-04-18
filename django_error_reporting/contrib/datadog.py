@@ -5,11 +5,11 @@ from django_error_reporting.utils import *
 def setup():
     print_debug("Setting up DataDog")
 
-    # Add ddtrace app
-    add_installed_app("ddtrace.contrib.django")
+    if "ddtrace.contrib.django" not in settings.INSTALLED_APPS:
+        raise NotImplementedError("Missing ddtrace.contrib.django in INSTALLED_APPS")
 
-    # Add DataDog middleware
-    add_middleware("django_error_reporting.middleware.DataDogExceptionMiddleware")
+    if "django_error_reporting.middleware.DataDogExceptionMiddleware" not in settings.MIDDLEWARE:
+        raise NotImplementedError("Missing django_error_reporting.middleware.DataDogExceptionMiddleware in MIDDLEWARE")
 
     setup_logging()
 
@@ -20,12 +20,13 @@ def setup_logging():
     if not settings.DER_SETUP_DATADOG_LOGGING:
         return
 
-    # Add logger app
-    add_installed_app("django_datadog_logger")
+    if "django_datadog_logger" not in settings.INSTALLED_APPS:
+        raise NotImplementedError("Missing django_datadog_logger in INSTALLED_APPS")
 
-    # Add logger middleware
-    add_middleware("django_datadog_logger.middleware.error_log.ErrorLoggingMiddleware")
-    add_middleware("django_datadog_logger.middleware.request_log.RequestLoggingMiddleware")
+    for middleware in ["error_log.ErrorLoggingMiddleware", "request_log.RequestLoggingMiddleware"]:
+        middleware_name = f"django_datadog_logger.middleware.{middleware}"
+        if middleware_name not in settings.MIDDLEWARE:
+            raise NotImplementedError(f"Missing {middleware_name} in MIDDLEWARE")
 
     if "datadog" not in settings.LOGGING["formatters"]:
         settings.LOGGING["formatters"]["datadog"] = {

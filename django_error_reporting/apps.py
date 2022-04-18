@@ -14,17 +14,18 @@ class DjangoErrorReportingConfig(AppConfig):
         print_debug("Loading...")
 
         #
+        # Check for our middleware
+
+        if "django_error_reporting.middleware.ErrorReportingMiddleware" not in DjSettings.MIDDLEWARE:
+            raise NotImplementedError("Missing django_error_reporting.middleware.ErrorReportingMiddleware in MIDDLEWARE")
+
+        #
         # Load our settings into Django
 
         for key in dir(DERSettings):
             if hasattr(DjSettings, key) or key.startswith("_") or key in ["logging"]:
                 continue
             setattr(DjSettings, key, getattr(DERSettings, key))
-
-        #
-        # Generic middleware
-
-        add_middleware("django_error_reporting.middleware.ErrorReportingMiddleware")
 
         #
         # Logger settings

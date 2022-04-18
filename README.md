@@ -20,8 +20,38 @@ Add it to your `INSTALLED_APPS`:
 ```python
 INSTALLED_APPS = (
     ...
-    "django_error_reporting",
+    "django_error_reporting.apps.DjangoErrorReportingConfig",
     ...
+)
+```
+
+Add this to your `MIDDLEWARE`:
+```python
+MIDDLEWARE = (
+    ...
+    "django_error_reporting.middleware.ErrorReportingMiddleware"
+)
+```
+
+
+### For DataDog implementations
+
+Add this to your `INSTALLED_APPS`:
+```python
+INSTALLED_APPS = (
+    ...
+    "django_datadog_logger",
+    "ddtrace.contrib.django",
+)
+```
+
+Add this to your `MIDDLEWARE`:
+```python
+MIDDLEWARE = (
+    ...
+    "django_error_reporting.middleware.DataDogExceptionMiddleware",
+    "django_datadog_logger.middleware.error_log.ErrorLoggingMiddleware",
+    "django_datadog_logger.middleware.request_log.RequestLoggingMiddleware",
 )
 ```
 
@@ -88,14 +118,11 @@ Defaults to `DER_LOGGING_LEVEL`.
 
 When the app is loaded (i.e., `ready()` is called), it will do the following:
  * Load default settings into the project settings
- * Add `ErrorReportingMiddleware` to `MIDDLEWARE`.
  * If DataDog integration is enabled:
-   * Add `DataDogExceptionMiddleware` to `MIDDLEWARE`
-   * Add `ddtrace.contrib.django` to `INSTALLED_APPS`
-   * If DataDog logging is enabled:
-     * Add `django_datadog_logger` to `INSTALLED_APPS`
-     * Add `ErrorLoggingMiddleware` and `RequestLoggingMiddleware` to `MIDDLEWARE`
-     * Set `LOGGING` with formatters, handlers, and loggers.
+   * Verify installed apps and middleware were added and throw `NotImplementedError` for missing.
+     * If DataDog logging is enabled:
+       * Verify installed apps and middleware were added and throw `NotImplementedError` for missing.
+       * Set `LOGGING` with formatters, handlers, and loggers.
 
 
 ## Middleware
@@ -119,16 +146,6 @@ This middleware should be added as late as possible.
 ### `add_event_tag(name, value, dd_scope=None)`
 
 Adds an event tag to the data sent to Sentry and/or DataDog. 
-
-### `add_middleware(middleware, add_early=False)`
-
-Add a middleware to `settings.MIDDLEWARE` after checking for its existence.
-
-If `add_early`, middleware is prepended to the list. Otherwise, it is appended.
-
-### `add_installed_app(app)`
-
-Add an app to `settings.INSTALLED_APPS` after checking for its existence. 
 
 ### `print_debug(msg)`
 

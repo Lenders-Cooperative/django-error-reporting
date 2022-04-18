@@ -35,8 +35,6 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    #
-    "django_error_reporting.apps.DjangoErrorReportingConfig",
 ]
 
 MIDDLEWARE = [
@@ -47,8 +45,6 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    #
-    "django_error_reporting.middleware.ErrorReportingMiddleware",
 ]
 
 ROOT_URLCONF = "test_app.urls"
@@ -170,6 +166,19 @@ integrations = [
 
 
 # Error Reporting
+
+INSTALLED_APPS += [
+    "django_error_reporting.apps.DjangoErrorReportingConfig",
+    "ddtrace.contrib.django",
+    "django_datadog_logger",
+]
+
+MIDDLEWARE += [
+    "django_error_reporting.middleware.ErrorReportingMiddleware",
+    "django_error_reporting.middleware.DataDogExceptionMiddleware",
+    "django_datadog_logger.middleware.error_log.ErrorLoggingMiddleware",
+    "django_datadog_logger.middleware.request_log.RequestLoggingMiddleware"
+]
 
 def error_reporting_cb(request, add_event_tag, dd_scope=None):
     add_event_tag(

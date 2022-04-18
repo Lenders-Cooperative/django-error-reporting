@@ -6,7 +6,7 @@ from .utils import *
 
 
 __all__ = [
-    "ErrorReportingMiddleware"
+    "ErrorReportingMiddleware", "DataDogExceptionMiddleware",
 ]
 
 
@@ -83,18 +83,17 @@ class ErrorReportingMiddleware(object):
                 self.dd_scope
             )
 
-        if settings.DER_INCLUDE_REQUEST_TAGS:
-            add_event_tag(
-                "http.client.ip_address",
-                request.META.get("REMOTE_ADDR"),
-                self.dd_scope
-            )
+        add_event_tag(
+            "http.client.ip_address",
+            request.META.get("REMOTE_ADDR"),
+            self.dd_scope
+        )
 
-            add_event_tag(
-                "http.client.user_agent",
-                request.META.get("HTTP_USER_AGENT"),
-                self.dd_scope
-            )
+        add_event_tag(
+            "http.client.user_agent",
+            request.META.get("HTTP_USER_AGENT"),
+            self.dd_scope
+        )
 
         if hasattr(settings, "DER_REQUEST_TAGGING_CB") and settings.DER_REQUEST_TAGGING_CB:
             settings.DER_REQUEST_TAGGING_CB(
