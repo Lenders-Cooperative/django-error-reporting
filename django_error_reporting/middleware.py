@@ -1,4 +1,5 @@
 from uuid import uuid4
+import logging
 from django.conf import settings
 from django.db import connection
 import ddtrace
@@ -8,6 +9,8 @@ from .utils import *
 __all__ = [
     "ErrorReportingMiddleware", "DataDogExceptionMiddleware",
 ]
+
+logger = logging.getLogger(__name__)
 
 
 class ErrorReportingMiddleware(object):
@@ -120,11 +123,16 @@ class DataDogExceptionMiddleware(object):
 
     def process_exception(self, request, exception):
         if exception:
-            ddtrace.tracer.current_root_span().set_exc_info(
-                type(exception),
-                exception,
-                exception.__traceback__
-            )
+            root_span = ddtrace.tracer.current_root_span()
+
+            if root_span:
+                root_span.set_exc_info(
+                    type(exception),
+                    exception,
+                    exception.__traceback__
+                )
+            else:
+                logger.warning("Could not get DataDog root span")
 
         # [!!] Return nothing so other middleware will process
 

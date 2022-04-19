@@ -11,6 +11,10 @@ DER_ENABLED_INTEGRATIONS = (
 DER_INCLUDE_REQUEST_TAGS = True  # Include end user information as span tags
 
 #
+# DataDog
+
+
+#
 # Logging
 DER_LOGGING_LEVEL = logging.ERROR
 
