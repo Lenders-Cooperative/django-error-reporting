@@ -40,7 +40,6 @@ Add this to your `INSTALLED_APPS`:
 ```python
 INSTALLED_APPS = (
     ...
-    "django_datadog_logger",
     "ddtrace.contrib.django",
 )
 ```
@@ -50,6 +49,25 @@ Add this to your `MIDDLEWARE`:
 MIDDLEWARE = (
     ...
     "django_error_reporting.middleware.DataDogExceptionMiddleware",
+)
+```
+
+#### Log Ingestion
+
+If you plan on implementing log ingestion, you'll also have to do the following:
+
+Add this to your `INSTALLED_APPS`:
+```python
+INSTALLED_APPS = (
+    ...
+    "django_datadog_logger"
+)
+```
+
+And this to your `MIDDLEWARE`:
+```python
+MIDDLEWARE = (
+    ...
     "django_datadog_logger.middleware.error_log.ErrorLoggingMiddleware",
     "django_datadog_logger.middleware.request_log.RequestLoggingMiddleware",
 )
@@ -71,8 +89,8 @@ Default: `("datadog", "sentry")`
 Indicates whether event tags related to the request should be added.
 
 These will include:
- * `http.client.ip_address` - remote client's IP address
- * `http.client.user_agent` - browner's user agent
+ * `http.client.ip_address` - remote IP address
+ * `http.client.user_agent` - browser user agent
 
 ### General Logging
 
@@ -81,6 +99,9 @@ These will include:
 Minimum logging level for logs output by DER.
 
 Defaults to `ERROR`.
+
+### DataDog
+
 
 ### DataDog Logging
 
@@ -102,7 +123,7 @@ Defaults to `False`
 
 #### `DER_DATADOG_LOGGING_FILE`
 
-Log file for DataDog.
+Log file for DataDog. This must correspond to 
 
 Defaults to `None` which disables file logging.
 
@@ -140,6 +161,10 @@ To add app-specific tags, you can set a callback with `ERROR_REPORTING_TAGGING_C
 When an exception is captured, this middleware will set the appropriate span tags on the root span of the trace. 
 
 This middleware should be added as late as possible.
+
+## Contrib
+
+For each implementation, there is a module in `contrib` and it must contain a `setup()` function which will be called during `ready()` to initialize and perform start-up tasks. 
 
 ## Utilities
 
