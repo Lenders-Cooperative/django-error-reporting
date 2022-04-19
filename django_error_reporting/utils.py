@@ -9,34 +9,36 @@ __all__ = [
 ]
 
 
-logger = logging.getLogger("root")
+logger = logging.getLogger(__name__)
 
 
 def add_event_tag(name, value, dd_scope=None):
     """
     Attempts to add an event tag for Sentry and DataDog
     """
-    try:
-        sentry_sdk.set_tag(
-            name,
-            value
-        )
-    except:
-        pass
+    if "datadog" in settings.DER_ENABLED_INTEGRATIONS:
+        if not dd_scope:
+            dd_scope = ddtrace.tracer.current_root_span()
 
-    try:
-        if dd_scope:
+        if not dd_scope:
+            dd_scope = ddtrace.tracer.current_span()
+
+        try:
             dd_scope.set_tag(
                 name,
                 value
             )
-        else:
-            ddtrace.tracer.current_span().set_tag(
+        except Exception as e:
+            logger.warning(f"Unable to set DataDog span tag '{name}': {e}")
+
+    if "sentry" in settings.DER_ENABLED_INTEGRATIONS:
+        try:
+            sentry_sdk.set_tag(
                 name,
                 value
             )
-    except:
-        pass
+        except Exception as e:
+            logger.warning(f"Unable to set Sentry tag '{name}': {e}")
 
 
 def sentry_before_send(event, _hint):
