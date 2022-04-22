@@ -24,5 +24,9 @@ urlpatterns = [
     path(
         "error",
         error_view
-    )
+    ),
+    path(
+        "logging",
+        logging_view,
+    ),
 ]

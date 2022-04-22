@@ -1,5 +1,7 @@
 from django.conf import settings
+from django.utils.log import configure_logging
 from django_error_reporting.utils import *
+import ddtrace
 
 
 def setup():
@@ -11,15 +13,18 @@ def setup():
     if "django_error_reporting.middleware.DataDogExceptionMiddleware" not in settings.MIDDLEWARE:
         raise NotImplementedError("Missing django_error_reporting.middleware.DataDogExceptionMiddleware in MIDDLEWARE")
 
-    setup_logging()
+    if settings.DER_SETUP_DATADOG_LOGGING:
+        print_debug("Setting up DataDog logging")
+        setup_logging()
+
+    if "CELERY_BROKER_URL" in dir(settings):
+        print_debug("Detected Celery broker URL and patched in ddtrace")
+        ddtrace.patch(celery=True)
 
     print_debug("Finished setting up DataDog")
 
 
 def setup_logging():
-    if not settings.DER_SETUP_DATADOG_LOGGING:
-        return
-
     if "django_datadog_logger" not in settings.INSTALLED_APPS:
         raise NotImplementedError("Missing django_datadog_logger in INSTALLED_APPS")
 
@@ -27,6 +32,8 @@ def setup_logging():
         middleware_name = f"django_datadog_logger.middleware.{middleware}"
         if middleware_name not in settings.MIDDLEWARE:
             raise NotImplementedError(f"Missing {middleware_name} in MIDDLEWARE")
+
+    ddtrace.patch(logging=True)
 
     if "datadog" not in settings.LOGGING["formatters"]:
         settings.LOGGING["formatters"]["datadog"] = {
@@ -54,10 +61,7 @@ def setup_logging():
 
     # Loggers
 
-    logger_handlers = []
-
-    if settings.DER_DATADOG_LOGGING_TO_CONSOLE:
-        logger_handlers.append("datadog-console")
+    logger_handlers = ["datadog-console"]
 
     if "datadog-file" in settings.LOGGING["handlers"]:
         logger_handlers.append("datadog-file")
@@ -79,3 +83,30 @@ def setup_logging():
             "propagate": False
         },
     })
+
+    # Reconfigure Django logging
+    # https://github.com/django/django/blob/7119f40c9881666b6f9b5cf7df09ee1d21cc8344/django/__init__.py#L19
+    configure_logging(
+        settings.LOGGING_CONFIG,
+        settings.LOGGING
+    )
+
+    try:
+        from celery.signals import after_setup_logger, after_setup_task_logger
+
+        @after_setup_logger.connect
+        def on_after_setup_logger(logger, *args, **kwargs):
+            from django_datadog_logger.formatters.datadog import DataDogJSONFormatter
+
+            for handler in list(logger.handlers):
+                handler.setFormatter(DataDogJSONFormatter())
+
+        @after_setup_task_logger.connect
+        def on_after_setup_task_logger(logger, *args, **kwargs):
+            from django_datadog_logger.formatters.datadog import DataDogJSONFormatter
+
+            for handler in list(logger.handlers):
+                handler.setFormatter(DataDogJSONFormatter())
+
+    except ImportError:
+        pass
