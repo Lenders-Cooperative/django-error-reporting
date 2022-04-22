@@ -89,8 +89,21 @@ Default: `("datadog", "sentry")`
 Indicates whether event tags related to the request should be added.
 
 These will include:
- * `http.client.ip_address` - remote IP address
- * `http.client.user_agent` - browser user agent
+ * `http.headers.ip_address` - remote IP address (see `DER_HEADERS_IP_ADDRESS`)
+
+#### `DER_HEADERS_IP_ADDRESS`
+
+If `DER_INCLUDE_REQUEST_TAGS` is enabled, this defines the IP address header. This needs to correspond to a HTTP header in the format accepted by [`request.META`](https://docs.djangoproject.com/en/4.0/ref/request-response/#django.http.HttpRequest.META).
+
+Defaults to `REMOTE_ADDR`.
+
+#### `DER_HEADER_TAGS`
+
+A dictionary of headers to convert to event tags in the format of `{<tag name>: <META name>}` where `<META name>` is the key acccepted by [`request.META`](https://docs.djangoproject.com/en/4.0/ref/request-response/#django.http.HttpRequest.META).
+
+In general, it would be preferable to set these tags via ddtrace's [`DD_TRACE_HEADER_TAGS`](https://ddtrace.readthedocs.io/en/stable/configuration.html) environment variable.
+
+Defaults to `None`. 
 
 ### General Logging
 

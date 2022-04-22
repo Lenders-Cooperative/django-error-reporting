@@ -75,14 +75,16 @@ class ErrorReportingMiddleware(object):
             )
 
         add_event_tag(
-            "http.client.ip_address",
-            request.META.get("REMOTE_ADDR")
+            "http.headers.user_ip_address",
+            request.META.get(settings.DER_HEADERS_IP_ADDRESS)
         )
 
-        add_event_tag(
-            "http.client.user_agent",
-            request.META.get("HTTP_USER_AGENT")
-        )
+        if settings.DER_HEADER_TAGS:
+            for tag_name, meta_key in settings.DER_HEADER_TAGS.iteritems():
+                add_event_tag(
+                    tag_name,
+                    request.META.get(meta_key)
+                )
 
         if hasattr(settings, "DER_REQUEST_TAGGING_CB") and settings.DER_REQUEST_TAGGING_CB:
             settings.DER_REQUEST_TAGGING_CB(

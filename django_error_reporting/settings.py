@@ -10,6 +10,10 @@ DER_ENABLED_INTEGRATIONS = (
 
 DER_INCLUDE_REQUEST_TAGS = True  # Include end user information as span tags
 
+DER_FORWARDED_IP_HEADER = "REMOTE_ADDR"
+
+DER_HEADER_TAGS = None
+
 #
 # DataDog
 
