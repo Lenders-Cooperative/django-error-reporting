@@ -105,6 +105,50 @@ In general, it would be preferable to set these tags via ddtrace's [`DD_TRACE_HE
 
 Defaults to `None`. 
 
+### Sentry
+
+#### `DER_SENTRY_DSN`
+
+Your Sentry DSN.
+
+Default: `None`
+
+#### `DER_SENTRY_INTEGRATIONS`
+
+List of Sentry integrations.
+
+Default: `[]`
+
+#### `DER_SENTRY_TRACES_SAMPLE_RATE`
+
+Float for sample rate.
+
+Default: `0.0`
+
+#### `DER_SENTRY_ENV`
+
+Environment name for Sentry.
+
+Default: `local`
+
+#### `DER_SENTRY_REQUEST_BODIES`
+
+Request bodies setting.
+
+Default: `always`
+
+#### `DER_SENTRY_RELEASE`
+
+Release.
+
+Default: `"0"`.
+
+#### `DER_SENTRY_DEBUG`
+
+Indicates if Sentry should use debug mode.
+
+Defaults to `settings.DEBUG`.
+
 ### General Logging
 
 #### `DER_LOGGING_LEVEL`
@@ -157,6 +201,9 @@ When the app is loaded (i.e., `ready()` is called), it will do the following:
      * If DataDog logging is enabled:
        * Verify installed apps and middleware were added and throw `NotImplementedError` for missing.
        * Set `LOGGING` with formatters, handlers, and loggers.
+ * If Sentry integration is enabled:
+   * Verify `DER_SENTRY_DSN` is set and throw `NotImplementedError` if missing.
+   * Initialize Sentry.
 
 
 ## Middleware
