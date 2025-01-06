@@ -92,33 +92,3 @@ class ErrorReportingMiddleware(object):
             )
 
         return self.get_response(request)
-
-
-# class DataDogExceptionMiddleware(object):
-#     """
-#     When an exception is captured, this middleware will set the appropriate span tags on the root span of the trace.
-
-#     This middleware should be added as late as possible.
-#     """
-#     def __init__(self, get_response):
-#         self.get_response = get_response
-
-#     def __call__(self, request):
-#         response = self.get_response(request)
-#         return response
-
-#     def process_exception(self, request, exception):
-#         if exception:
-#             root_span = ddtrace.tracer.current_root_span()
-
-#             if root_span:
-#                 root_span.set_exc_info(
-#                     type(exception),
-#                     exception,
-#                     exception.__traceback__
-#                 )
-#             else:
-#                 logger.warning("Could not get DataDog root span")
-
-        # [!!] Return nothing so other middleware will process
-

@@ -6,7 +6,6 @@ Global error reporting framework for Django, Sentry, and DataDog
 * **Python** >= 3.6
 * **django** >= 2.2.9
 * **sentrysdk** >= 1.5.4 
-* **ddtrace** >=0.59.0
 * **django-datadog-logger** >= 0.5.0
 
 ## Installation
@@ -34,23 +33,7 @@ MIDDLEWARE = (
 ```
 
 
-### For DataDog implementations
 
-Add this to your `INSTALLED_APPS`:
-```python
-INSTALLED_APPS = (
-    ...
-    "ddtrace.contrib.django",
-)
-```
-
-Add this to your `MIDDLEWARE`:
-```python
-MIDDLEWARE = (
-    ...
-    "django_error_reporting.middleware.DataDogExceptionMiddleware",
-)
-```
 
 #### Log Ingestion
 
@@ -101,7 +84,6 @@ Defaults to `REMOTE_ADDR`.
 
 A dictionary of headers to convert to event tags in the format of `{<tag name>: <META name>}` where `<META name>` is the key acccepted by [`request.META`](https://docs.djangoproject.com/en/4.0/ref/request-response/#django.http.HttpRequest.META).
 
-In general, it would be preferable to set these tags via ddtrace's [`DD_TRACE_HEADER_TAGS`](https://ddtrace.readthedocs.io/en/stable/configuration.html) environment variable.
 
 Defaults to `None`. 
 
