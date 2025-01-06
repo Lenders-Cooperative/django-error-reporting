@@ -169,15 +169,10 @@ DER_SENTRY_INTEGRATIONS = [
 
 INSTALLED_APPS += [
     "django_error_reporting.apps.DjangoErrorReportingConfig",
-    "ddtrace.contrib.django",
-    "django_datadog_logger",
 ]
 
 MIDDLEWARE += [
     "django_error_reporting.middleware.ErrorReportingMiddleware",
-    "django_error_reporting.middleware.DataDogExceptionMiddleware",
-    "django_datadog_logger.middleware.error_log.ErrorLoggingMiddleware",
-    "django_datadog_logger.middleware.request_log.RequestLoggingMiddleware"
 ]
 
 def error_reporting_cb(request, add_event_tag, dd_scope=None):
