@@ -6,7 +6,6 @@ Global error reporting framework for Django, Sentry, and DataDog
 * **Python** >= 3.6
 * **django** >= 2.2.9
 * **sentrysdk** >= 1.5.4 
-* **django-datadog-logger** >= 0.5.0
 
 ## Installation
 
@@ -144,9 +143,7 @@ Defaults to `ERROR`.
 
 ### DataDog Logging
 
-#### `DER_SETUP_DATADOG_LOGGING`
 
-Indicates whether to setup DataDog logging using `django-datadog-logger`.
 
 #### `DER_DATADOG_LOGGING_LEVEL`
 
