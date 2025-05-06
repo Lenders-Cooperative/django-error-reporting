@@ -3,8 +3,7 @@ from sentry_sdk.integrations.django.transactions import LEGACY_RESOLVER
 from django.conf import settings
 from django_error_reporting.utils import *
 import sentry_sdk
-from sentry_sdk import VERSION as sentry_sdk_version
-from constants import SENTRY_BREAKING_VERSION
+from utils import is_sentry_v2
 
 
 def setup():
@@ -29,7 +28,7 @@ def setup():
     version_kwargs = (
         {
             "max_request_body_size": settings.DER_SENTRY_REQUEST_BODIES
-        } if sentry_sdk_version >= SENTRY_BREAKING_VERSION else {
+        } if is_sentry_v2() else {
             "request_bodies": settings.DER_SENTRY_REQUEST_BODIES
         }
     )

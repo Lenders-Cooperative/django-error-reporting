@@ -3,7 +3,7 @@ from django.conf import settings
 import sentry_sdk
 import ddtrace
 from sentry_sdk import VERSION as sentry_sdk_version
-from constants import SENTRY_BREAKING_VERSION
+from constants import SENTRY_V2
 
 __all__ = [
     "add_event_tag", "capture_exception", "capture_message", "print_debug",
@@ -60,7 +60,7 @@ def sentry_init():
     version_kwargs = (
         {
             "max_request_body_size": None
-        } if sentry_sdk_version >= SENTRY_BREAKING_VERSION else {
+        } if is_sentry_v2() else {
             "request_bodies": None
         }
     )
@@ -97,3 +97,10 @@ def capture_message(e):
 def print_debug(msg):
     if settings.DEBUG:
         print(f"[DER] {msg}")
+
+
+def is_sentry_v2():
+    """
+    Check if Sentry SDK version is 2.0.0 or higher
+    """
+    return sentry_sdk_version >= SENTRY_V2
