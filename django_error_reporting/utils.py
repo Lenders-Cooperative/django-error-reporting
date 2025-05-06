@@ -2,7 +2,8 @@ import logging
 from django.conf import settings
 import sentry_sdk
 import ddtrace
-
+from sentry_sdk import VERSION as sentry_sdk_version
+from constants import SENTRY_V2
 
 __all__ = [
     "add_event_tag", "capture_exception", "capture_message", "print_debug",
@@ -56,6 +57,14 @@ def send_full_request_body():
 
 
 def sentry_init():
+    version_kwargs = (
+        {
+            "max_request_body_size": None
+        } if is_sentry_v2() else {
+            "request_bodies": None
+        }
+    )
+
     sentry_sdk.init(
         dsn=settings.SENTRY_DSN,
         debug=settings.DEBUG,
@@ -65,7 +74,7 @@ def sentry_init():
         release=settings.CODEBUILD_BUILD_NUMBER,
         send_default_pii=True,
         before_send=sentry_before_send,
-        request_bodies=None
+        **version_kwargs,
     )
 
 
@@ -88,3 +97,10 @@ def capture_message(e):
 def print_debug(msg):
     if settings.DEBUG:
         print(f"[DER] {msg}")
+
+
+def is_sentry_v2():
+    """
+    Check if Sentry SDK version is 2.0.0 or higher
+    """
+    return sentry_sdk_version >= SENTRY_V2

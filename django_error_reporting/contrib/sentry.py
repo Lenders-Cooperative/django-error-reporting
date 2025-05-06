@@ -3,6 +3,7 @@ from sentry_sdk.integrations.django.transactions import LEGACY_RESOLVER
 from django.conf import settings
 from django_error_reporting.utils import *
 import sentry_sdk
+from utils import is_sentry_v2
 
 
 def setup():
@@ -23,6 +24,14 @@ def setup():
             event["transaction"] = LEGACY_RESOLVER.resolve(path, urlconf=urlconf)
 
         return event
+    
+    version_kwargs = (
+        {
+            "max_request_body_size": settings.DER_SENTRY_REQUEST_BODIES
+        } if is_sentry_v2() else {
+            "request_bodies": settings.DER_SENTRY_REQUEST_BODIES
+        }
+    )
 
     sentry_sdk.init(
         dsn=settings.DER_SENTRY_DSN,
@@ -33,7 +42,7 @@ def setup():
         release=settings.DER_SENTRY_RELEASE,
         send_default_pii=True,
         before_send=before_send,
-        request_bodies=settings.DER_SENTRY_REQUEST_BODIES
+        **version_kwargs,
     )
 
     print_debug("Finished setting up Sentry")
