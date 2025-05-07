@@ -3,7 +3,6 @@ from sentry_sdk.integrations.django.transactions import LEGACY_RESOLVER
 from django.conf import settings
 from django_error_reporting.utils import *
 import sentry_sdk
-from utils import is_sentry_v2
 
 
 def setup():
