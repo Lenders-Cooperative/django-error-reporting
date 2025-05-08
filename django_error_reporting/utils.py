@@ -3,10 +3,10 @@ from django.conf import settings
 import sentry_sdk
 import ddtrace
 from sentry_sdk import VERSION as sentry_sdk_version
-from constants import SENTRY_V2
+from .constants import SENTRY_V2
 
 __all__ = [
-    "add_event_tag", "capture_exception", "capture_message", "print_debug",
+    "add_event_tag", "capture_exception", "capture_message", "print_debug", "is_sentry_v2"
 ]
 
 

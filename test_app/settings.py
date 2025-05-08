@@ -169,7 +169,6 @@ DER_SENTRY_INTEGRATIONS = [
 
 INSTALLED_APPS += [
     "django_error_reporting.apps.DjangoErrorReportingConfig",
-    "ddtrace.contrib.django",
     "django_datadog_logger",
 ]
 
