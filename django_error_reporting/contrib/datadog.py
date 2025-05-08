@@ -7,9 +7,6 @@ import ddtrace
 def setup():
     print_debug("Setting up DataDog")
 
-    if "ddtrace.contrib.django" not in settings.INSTALLED_APPS:
-        raise NotImplementedError("Missing ddtrace.contrib.django in INSTALLED_APPS")
-
     if "django_error_reporting.middleware.DataDogExceptionMiddleware" not in settings.MIDDLEWARE:
         raise NotImplementedError("Missing django_error_reporting.middleware.DataDogExceptionMiddleware in MIDDLEWARE")
 
